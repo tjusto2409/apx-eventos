@@ -19,9 +19,12 @@ namespace Domain.DomainObjects
         {
             Key = Guid.NewGuid();
             Identifier = ShortId.Generate(new GenerationOptions(useSpecialCharacters: false, length: 6, useNumbers: true));
+            
             shoppingCart.CalculateTotal();
+            
             OrderItems = shoppingCart.ShoppingCardItems
-                .Select(items => new OrderItem(Key, items.EventKey, items.DiscountAmount, items.Price)).ToList();
+                .Select(cardItem => new OrderItem(Key, cardItem.EventKey, cardItem.DiscountKey, cardItem.DiscountAmount, cardItem.Price))
+                .ToList();
         }
     }
 }
