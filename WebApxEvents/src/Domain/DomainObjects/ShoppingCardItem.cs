@@ -19,7 +19,7 @@ namespace Domain.DomainObjects
             PriceToPay = price;
         }
 
-        public void ApplyDiscount(Guid discountKey, int discountPercentage)
+        public void CalculateDiscount(Guid discountKey, int discountPercentage)
         {
             DiscountKey = discountKey;
             DiscountAmount = Price * discountPercentage / 100;

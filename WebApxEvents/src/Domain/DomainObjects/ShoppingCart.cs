@@ -33,15 +33,15 @@ namespace Domain.DomainObjects
             TotalPayable = ShoppingCardItems.Sum(s => s.PriceToPay);
         }
 
-        private void CalculateDiscount(DiscountCoupon discountCoupon)
+        private void ApplyDiscount(DiscountCoupon discountCoupon)
         {
-            var shoppingCardItems = ShoppingCardItems
-                .Where(s => s.EventKey == discountCoupon.EventKey).ToList();
-
-            foreach (var cardItem in shoppingCardItems)
-            {
-                cardItem.ApplyDiscount(discountCoupon.Key, discountCoupon.Percentage);
-            }
+            if (ShoppingCardItems.Count == 0)
+                throw new Exception();
+            
+            ShoppingCardItems
+                .Where(s => s.DiscountKey != discountCoupon.Key && s.EventKey == discountCoupon.EventKey)
+                .ToList()
+                .ForEach(cardItem => cardItem.CalculateDiscount(discountCoupon.Key, discountCoupon.Percentage));
         }
 
         public void Add(ShoppingCardItem purchaseItem) => ShoppingCardItems.Add(purchaseItem);
