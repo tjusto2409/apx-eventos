@@ -6,17 +6,8 @@ namespace Domain.DomainObjects
     {
         public Guid Key { get; }
         public Guid EventKey { get; }
-
-        private decimal _discountAmount;
-        public decimal DiscountAmount
-        {
-            get => _discountAmount;
-            set
-            {
-                _discountAmount = (Price * value / 100);
-                PriceToPay = Price - _discountAmount;
-            }
-        }
+        public Guid DiscountKey { get; private set; }
+        public decimal DiscountAmount { get; private set; }
         public decimal Price { get; }
         public decimal PriceToPay { get; private set; }
 
@@ -26,6 +17,13 @@ namespace Domain.DomainObjects
             EventKey = eventKey;
             Price = price;
             PriceToPay = price;
+        }
+
+        public void CalculateDiscount(Guid discountKey, int discountPercentage)
+        {
+            DiscountKey = discountKey;
+            DiscountAmount = Price * discountPercentage / 100;
+            PriceToPay = Price - DiscountAmount;
         }
     }
 }

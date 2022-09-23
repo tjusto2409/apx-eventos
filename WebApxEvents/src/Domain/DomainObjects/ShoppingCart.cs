@@ -8,7 +8,6 @@ namespace Domain.DomainObjects
     {
         public Guid Key { get; }
         public List<ShoppingCardItem> ShoppingCardItems { get; }
-        public DiscountCoupon DiscountCoupon { get; set; }
         public int AmountItems { get; private set; }
         public decimal TotalAmount { get; private set; }
         public decimal TotalDiscount { get; private set; }
@@ -28,24 +27,23 @@ namespace Domain.DomainObjects
 
         public void CalculateTotal()
         {
-            CalculateDiscount();
             AmountItems = ShoppingCardItems.Count;
             TotalAmount = ShoppingCardItems.Sum(s => s.Price);
             TotalDiscount = ShoppingCardItems.Sum(s => s.DiscountAmount);
             TotalPayable = ShoppingCardItems.Sum(s => s.PriceToPay);
         }
 
-        private void CalculateDiscount()
+        private ShoppingCart ApplyDiscount(DiscountCoupon discountCoupon)
         {
-            if (DiscountCoupon == null) return;
+            if (ShoppingCardItems.Count == 0)
+                throw new Exception();
             
-            var shoppingCardItems = ShoppingCardItems
-                .Where(s => s.EventKey == DiscountCoupon.EventKey).ToList();
+            ShoppingCardItems
+                .Where(s => s.DiscountKey != discountCoupon.Key && s.EventKey == discountCoupon.EventKey)
+                .ToList()
+                .ForEach(cardItem => cardItem.CalculateDiscount(discountCoupon.Key, discountCoupon.Percentage));
 
-            foreach (var cardItem in shoppingCardItems)
-            {
-                cardItem.DiscountAmount = DiscountCoupon.Percentage;
-            }
+            return this;
         }
 
         public void Add(ShoppingCardItem purchaseItem) => ShoppingCardItems.Add(purchaseItem);
