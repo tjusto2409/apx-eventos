@@ -33,7 +33,7 @@ namespace Domain.DomainObjects
             TotalPayable = ShoppingCardItems.Sum(s => s.PriceToPay);
         }
 
-        private void ApplyDiscount(DiscountCoupon discountCoupon)
+        private ShoppingCart ApplyDiscount(DiscountCoupon discountCoupon)
         {
             if (ShoppingCardItems.Count == 0)
                 throw new Exception();
@@ -42,6 +42,8 @@ namespace Domain.DomainObjects
                 .Where(s => s.DiscountKey != discountCoupon.Key && s.EventKey == discountCoupon.EventKey)
                 .ToList()
                 .ForEach(cardItem => cardItem.CalculateDiscount(discountCoupon.Key, discountCoupon.Percentage));
+
+            return this;
         }
 
         public void Add(ShoppingCardItem purchaseItem) => ShoppingCardItems.Add(purchaseItem);
